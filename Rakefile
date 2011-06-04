@@ -15,6 +15,12 @@ namespace :doc do
     puts "Generating the project report..."
     system('pdflatex', "-output-directory=#{Vegas.root('doc')}", Vegas.root('doc', 'project.tex'))
   end
+
+  desc 'Remove generated tex intermediate files'
+  task :clean do
+    garbage = ['aux', 'log', 'pdf'].map {|ext| Vegas.root('doc', "*.#{ext}")}
+    rm FileList[*garbage]
+  end
 end
 
 task :doc => 'doc:generate'
