@@ -35,7 +35,9 @@ cut -d \textit{sep} -f \textit{field} & Output only the field numbered
 grep -i \textit{regex} & Output lines from the input that match \textit{regex}.
 Case insensitive.\\
 
-wc -l & Read the input and output the number of lines.\\\hline
+wc -l & Read the input and output the number of lines.\\
+
+file \textit{filename} & Determine the filetype of \textit{filename} and output\\\hline
 \end{tabular}
 \end{figure}
 
@@ -228,8 +230,10 @@ story. The browser should show you the indicated page.
 \item Search for tweets in a geographical area
 
 \textbf{User Story:} A user searches for nearby tweets by giving geotag
-information. The directory \texttt{/search/geo/:lat\_:long} will contain a
-number of files with tweet information as in SR-\ref{req:get-latest}.
+information.
+
+The directory \texttt{/search/geo/:lat\_:long} will contain a number of files
+with tweet information as in SR-\ref{req:get-latest}.
 
 \textbf{How to test:} To test, the user would list the contents of the file
 \texttt{/search/geo/xxx\_yyy/} and inspect the first file. This requirement will
