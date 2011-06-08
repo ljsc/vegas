@@ -54,6 +54,7 @@ referenced by the name following the symbol.
 
 \begin{Requirements}
 
+\subsubsection{Getting simple information}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \item Get information for a user.
 
@@ -98,6 +99,7 @@ If the user wants only the message contents, they can read the contents of
     \$ cat /tweets/n/body.txt
 \end{alltt}
 
+\subsubsection{Getting lists of tweets}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \item Get a user's latest tweets\label{req:get-latest}
 
@@ -135,8 +137,9 @@ three commands should output the same value:
     \$ cat /\textit{:user}/mentions/*.txt | grep '^message:@' | grep '@\textit{:username}' | wc -l
 \end{alltt}
 
+\subsubsection{Updating tweets}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\item Create a new tweet
+\item Create a new tweet\label{req:create-tweet}
 
 \textbf{User Story:} This feature allows creation of a new tweet by writing to a
 file at location \texttt{/tweets/new.txt} with the contents of your tweet. The
@@ -155,14 +158,92 @@ The following command should contain the message entered in the previous step.
     \$ cat \texttt{/:user/tweets/latest/}\$(ls -lt1 \texttt{/:user/tweets/latest} | head -n 1)
 \end{alltt}
 
+
+\subsubsection{Searching}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\item Search for a hashtag
+
+\textbf{User Story:} A user searches for a keyword among all tweets via the
+hashtag metadata convention. When a user creates a tweet, they can prefix
+keywords with the `\#` character. This search will target these tweets. The user
+lists the contents of the directory \texttt{/:hashtag/tweets/}. There is one
+tweet per file as described in SR-\ref{req:get-latest}.
+
+\textbf{How to test:} Tweet a new tweet, or reuse a previous tweet for this test
+as per SR-\ref{req:create-tweet}. In this tweet, create a hashtag with a GUID.
+Then search for that tag as in the following command; it should output $1$.
+
+\begin{alltt}
+    \$ ls -1 \texttt{/\textit{GUID}/tweets/} | wc -l
+\end{alltt}
+
+\subsubsection{Content Negotiation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\item Search for a hashtag
-\item Search for tweets in a geographical area
+\item View tweets with images as images\label{req:images}
 
-\item View tweets with images as images
+\textbf{User Story:} Users should be able to get attached media content from
+tweets by changing the file extension. The if the user inspects a file
+\texttt{tweet\_id.txt}, they should be able to see the picture embedded in the
+tweet by opening \texttt{tweet\_id.png} for instance.
+
+File formats that would be supported would be .png and .jpg. All embedded urls
+using the yfrog service will be detected.
+
+\textbf{How to test:} There are command-line utilities to inspect meta data
+about an image file. One of these could be used to ensure that the data returned
+is a valid image format. Also, we can use the UNIX \texttt{file} command to do
+something similar:
+
+\begin{alltt}
+    \$ file /:user/tweets/1234.png # should return png
+\end{alltt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \item Open a link for a given tweet as the expanded web page
+
+\textbf{User Story:} If the embedded url is not detected as an image as in
+SR-\ref{req:images}, it will be considered a normal url. If the user opens up
+\texttt{tweet\_id.html}, it will return the contents of fetching that url
+directly.
+
+\textbf{How to test:} Open the file \texttt{tweet\_id.html} as described in the
+story. The browser should show you the indicated page.
 
 \end{Requirements}
 
 \subsection{Optional Requirements}
+
+\setcounter{requirements}{1}
+\renewenvironment{Requirements}
+  {\begin{list}{OR-\arabic{requirements}.}%
+               {\usecounter{requirements}}}%
+  {\end{list}}
+
+\begin{Requirements}
+
+\subsubsection{Advanced Search}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\item Search for tweets in a geographical area
+
+\textbf{User Story:} A user searches for nearby tweets by giving geotag
+information. The directory \texttt{/search/geo/:lat\_:long} will contain a
+number of files with tweet information as in SR-\ref{req:get-latest}.
+
+\textbf{How to test:} To test, the user would list the contents of the file
+\texttt{/search/geo/xxx\_yyy/} and inspect the first file. This requirement will
+be manually verified by inspecting the metadata for that tweet.
+
+\subsubsection{Caching}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\item Requests for tweets are cached between calls
+
+\textbf{User Story:} A user gets information as in any of the static
+requirements as above. If possible, the system should not re-fetch the entire
+contents of the data if the cached version is fresh.
+
+\textbf{How to test:} To be determined.
+
+\end{Requirements}
