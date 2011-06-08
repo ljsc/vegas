@@ -1,6 +1,6 @@
 \section{Requirements Analysis}
 
-\subsection{Static Requirements}
+\subsection{Requirements Overview}
 
 In the following sections we will outline the project requirements. Each
 requirement will have a short name, which is indicative of purpose for the
@@ -37,16 +37,16 @@ Case insensitive.\\
 
 wc -l & Read the input and output the number of lines.\\
 
-file \textit{filename} & Determine the filetype of \textit{filename} and output\\\hline
+file \textit{filename} & Determine the file type of \textit{filename} and output\\\hline
 \end{tabular}
 \end{figure}
 
 We assume familiarity with regular expressions and with UNIX
 pipes\footnote{TODO: Add references for refreshers}. In user stories, any path
-component prefixed with a ':' is to be considered a wildcard, and will be
+component prefixed with a ':' is to be considered a wild card, and will be
 referenced by the name following the symbol.
 
-\hrulefill
+\subsection{Static Requirements}
 
 \newcounter{requirements}
 \newenvironment{Requirements}
@@ -73,7 +73,7 @@ contains the following attributes:
 \item Join date
 \end{itemize}
 
-\textbf{How to test:} The following should ouput "Lou Scoras".
+\textbf{How to test:} The following should output "Lou Scoras".
 
 \begin{alltt}
     \$ cat /ljsc/info.txt | grep -i 'Full-Name' | cut -d: -f2 
@@ -237,7 +237,7 @@ with tweet information as in SR-\ref{req:get-latest}.
 
 \textbf{How to test:} To test, the user would list the contents of the file
 \texttt{/search/geo/xxx\_yyy/} and inspect the first file. This requirement will
-be manually verified by inspecting the metadata for that tweet.
+be manually verified by inspecting the meta data for that tweet.
 
 \subsubsection{Caching}
 
