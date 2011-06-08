@@ -24,6 +24,8 @@ As such, we will make heavy use of the following tools:
 \hline
 COMMAND & DESCRIPTION \\\hline
 
+ls -1 & Output each file in the directory on per line.\\
+
 cat \textit{filename} & Output the contents of \textit{filename} to standard
 output.\\
 
@@ -31,7 +33,9 @@ cut -d \textit{sep} -f \textit{field} & Output only the field numbered
 \textit{field} using \textit{sep} to separate columns.\\
 
 grep -i \textit{regex} & Output lines from the input that match \textit{regex}.
-Case insensitive.\\\hline
+Case insensitive.\\
+
+wc -l & Read the input and output the number of lines.\\\hline
 \end{tabular}
 \end{figure}
 
@@ -67,11 +71,11 @@ contains the following attributes:
 
 \textbf{How to test:} The following should ouput "Lou Scoras".
 
-\begin{verbatim}
-cat /ljsc/info.txt | grep -i 'Full-Name' | cut -d: -f2 
-\end{verbatim}
+\begin{alltt}
+    \$ cat /ljsc/info.txt | grep -i 'Full-Name' | cut -d: -f2 
+\end{alltt}
 
-\item Get a tweet given a particular id
+\item Get a tweet given a particular id\label{get-a-tweet}
 
 \textbf{User Story:} A user reads the file \texttt{/tweets/:tweet\_id.txt}.
 The contents of the file will have the body of the tweet, which will contain:
@@ -88,14 +92,73 @@ If the user wants only the message contents, they can read the contents of
 \textbf{How to test:} Using the following command on predetermined tweet
 \textit{n} yields ``This is a canned tweet.``
 
-\begin{verbatim}
-cat /tweets/n/body.txt
-\end{verbatim}
+\begin{alltt}
+    \$ cat /tweets/n/body.txt
+\end{alltt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% SR_3: Get a user's latest tweets
+% User Story: A user reads the file user/tweets/latest.txt
+% The contents of the text file contain the latest tweet, which will contain:
+% -Message
+% -Date/Time posted
+% -Author
+% 
+% Additionally, just the message body can be accessed by
+% user/tweets/latest/body.txt
+ 
+% How to test: Getting the above requirement's tweet at
+% user/tweets/1.txt and user/tweets/latest.txt should be equal. (You can
+% use http://api.twitter.com/1/statuses/user_timeline.json?count=1 to
+% populate latest tweet)
 
 \item Get a user's latest tweets
-\item Get a user's at mentions
 
-\item Create a new tweet
+\textbf{User Story:} A user lists the contents of the directory
+\texttt{/user/tweets/latest}. For each tweet in the timeline there will be a
+file in the directory, \texttt{:tweet\_id.txt}. The contents of this file are as
+described in SR-\ref{get-a-tweet}.
+
+\textbf{How to test:} Take any tweet in a user's timeline within the last $n$
+tweets, all of which are considered the latest. Let this tweets id be
+\textit{tweet\_id}. The following command should then output $1$.
+
+\begin{alltt}
+    \$ ls -1 /vegasfs/tweets/latest | grep -i "\textit{tweet\_id}.txt" | wc -l
+\end{alltt}
+
+% SR_4 Get a user's @ mentions
+% User Story: This file returns a user's mentions, up to 800 tweets.(A
+% limitation by the API)
+% To access the number of mentions, the user can access
+% user/tweets/:number_of_tweets/mentions.txt where number_of_tweets is
+% the number of tweets to fetch, from 1-800. This will point you to a
+% text file containing all the @mentions with:
+% -Message
+% -Date/Time posted
+% -Author
+% Additionally, going to user/tweets/:number_of_tweets/mentions/body.txt
+% returns the number of latest mentions with just the body of the
+% message.
+% Going to user/tweets/:number_of_tweets/mentions/author.txt returns a
+% list of authors of mention tweets :number_of_tweets long.
+% 
+% How to test:
+% (I can't think of a good test for this one...perhaps grepping all
+% user's tweets for @:username? Seems like a stupid test to me...)
+% 
+% SR_5 Create a new tweet
+% User Story: This file creates a new tweet via POST action data to the
+% URI. this is done by writing to a file at location user/tweets/new
+% with the contents of your tweet. The date and author information will
+% be appended automatically by the twitter system.
+% 
+% How to test:
+% Creating a new tweet and accesing /:user/tweets/1.txt matches with the
+% information posted to the service.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \item Search for a hashtag
 \item Search for tweets in a geographical area
