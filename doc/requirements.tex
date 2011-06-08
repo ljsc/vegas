@@ -1,0 +1,108 @@
+\section{Requirements Analysis}
+
+\subsection{Static Requirements}
+
+In the following sections we will outline the project requirements. Each
+requirement will have a short name, which is indicative of purpose for the
+feature and is intended to for identifying the requirement. In addition, there
+is a short user story, which explains the functionality in further detail.
+Finally, each requirement will have a section which describes the acceptance
+test which must pass for the requirement to be accepted.
+
+The section on testing bares further discussion of terminology and notation.
+Because the goal of the project is to make a file system for a POSIX
+environment, it seems only right to define the desired operation in terms of
+standard *NIX command line tool. Although for the project we will be creating an
+automated test suite for all specified tests, it should also be possible to
+verify correct operation using only tools on the command line.
+
+As such, we will make heavy use of the following tools:
+
+\begin{figure}[H]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+COMMAND & DESCRIPTION \\\hline
+
+cat \textit{filename} & Output the contents of \textit{filename} to standard
+output.\\
+
+cut -d \textit{sep} -f \textit{field} & Output only the field numbered
+\textit{field} using \textit{sep} to separate columns.\\
+
+grep -i \textit{regex} & Output lines from the input that match \textit{regex}.
+Case insensitive.\\\hline
+\end{tabular}
+\end{figure}
+
+We assume familiarity with regular expressions and with UNIX
+pipes\footnote{TODO: Add references for refreshers}. In user stories, any path
+component prefixed with a ':' is to be considered a wildcard, and will be
+referenced by the name following the symbol.
+
+\hrulefill
+
+\newcounter{requirements}
+\newenvironment{Requirements}
+  {\begin{list}{SR-\arabic{requirements}.}%
+               {\usecounter{requirements}}}%
+  {\end{list}}
+
+\begin{Requirements}
+
+\item Get information for a user.
+
+\textbf{User Story:} A user reads the file to the path \texttt{/:user/info.txt}.
+Inside the file they see information regarding the user named \texttt{:user}. It
+contains the following attributes:
+
+\begin{itemize}
+\item Full name
+\item Screen name
+\item Followers count
+\item Statuses count
+\item Location
+\item Join date
+\end{itemize}
+
+\textbf{How to test:} The following should ouput "Lou Scoras".
+
+\begin{verbatim}
+cat /ljsc/info.txt | grep -i 'Full-Name' | cut -d: -f2 
+\end{verbatim}
+
+\item Get a tweet given a particular id
+
+\textbf{User Story:} A user reads the file \texttt{/tweets/:tweet\_id.txt}.
+The contents of the file will have the body of the tweet, which will contain:
+
+\begin{itemize}
+\item Message
+\item Date
+\item Author
+\end{itemize}
+
+If the user wants only the message contents, they can read the contents of
+\texttt{/tweets/:tweet\_id/body.txt} alone.
+
+\textbf{How to test:} Using the following command on predetermined tweet
+\textit{n} yields ``This is a canned tweet.``
+
+\begin{verbatim}
+cat /tweets/n/body.txt
+\end{verbatim}
+
+\item Get a user's latest tweets
+\item Get a user's at mentions
+
+\item Create a new tweet
+
+\item Search for a hashtag
+\item Search for tweets in a geographical area
+
+\item View tweets with images as images
+\item Open a link for a given tweet as the expanded web page
+
+\end{Requirements}
+
+\subsection{Optional Requirements}
