@@ -1,0 +1,8 @@
+\section{design document}
+\subsection{Purpose}
+The problem we are trying to solve is how to map a RESTful API onto a POSIX filespace. This allows users to browse the data in a familiar topography and also utilize various command-line tools for browsing, manipulating, creating, and deleting data. 
+
+Our program is meant to be used by an average user who has a basic understanding of file systems and command-line tools. Our goal is to abstract the process so that the user does not need to know the specific RESTful API, he or she simply needs to know simple file operations in order to interact with the program.
+
+\subsection{High Level Entities}
+Our design consists of a RESTful API that interfaces with our ruby program. For demonstration purposes we are basing our implementation off of the Twitter API(\textit{http://http://dev.twitter.com/doc})The Ruby middleware uses Sinatra for pairing methods with RESTful routes. We use the ruby implementation of the FUSE (Fileystem in User SpacE) (\textit{https://rubyforge.org/projects/fusefs/}) to actually mimic a POSIX filesystem on the user's local environment. All data will be fetched from the API. We may implement a caching algorithm if time allows, but the program should be designed to allow caching to be implemented.   
