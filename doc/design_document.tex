@@ -23,6 +23,26 @@ will be fetched from the API.
 
 \subsection{Top Level Archetecture}
 
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+  \node [draw] at (0,0)    (Bottom) {Twitter API};
+  \node [draw] at (0,1.5)  (Middle) {Router};
+  \node [draw] at (0,3)    (Top)    {Fuse Driver};
+
+  \draw [<-] (Bottom.120) -- (Middle.240);
+  \draw [<-] (Middle.290) -- (Bottom.70);
+  \draw [<-] (Middle.120) -- (Top.240);
+  \draw [<-] (Top.290) -- (Middle.70);
+
+  \node at (-1.5, 0.75) { Request };
+  \node at (-1.5, 2.25) { Request };
+  \node at (1.5, 0.75) { Response };
+  \node at (1.5, 2.25) { Response };
+\end{tikzpicture}
+\caption{Top Level Components}\label{fig:top-top}
+\end{figure}
+
 \subsubsection{Processing Elements}
 
 \paragraph{The FUSE driver} handles file system requests generated due
@@ -39,25 +59,13 @@ webservice api provided by twitter.
 \paragraph{Twitter API} will be leveraged to actually interact with the data as
 requested by the user.
 
-\subsection{Connecting Elements}
+\subsubsection{Connecting Elements}
 
 The above processing elements are connected to form a layered architecture as
-shown in figure~\ref{fig:top-top} below. All connections in the diagram
+shown in figure~\ref{fig:top-top} above. All connections in the diagram
 represent HTTP connections. An HTTP request using one of the specified verbs
 (GET/POST/PUT/DELETE) is sent to lower level components from higher level
 components. Likewise, lower level components will---based upon responses further
 down the stack---return HTTP responses to the layer above.
 
-\begin{figure}[h]
-\centering
-\begin{tikzpicture}
-  \node [draw] at (0,0)    (Bottom) {Twitter API};
-  \node [draw] at (0,1)    (Middle) {Router};
-  \node [draw] at (0,2)    (Top)    {Fuse Driver};
-
-  \draw [<->] (Bottom) -- (Middle);
-  \draw [<->] (Middle) -- (Top);
-\end{tikzpicture}
-\caption{Top Level Components.}\label{fig:top-top}
-\end{figure}
 
