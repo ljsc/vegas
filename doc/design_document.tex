@@ -25,22 +25,22 @@ The FUSE driver maps a file system call to an HTTP verb. This HTTP request is
 sent to a local instance of a web service
 
 \begin{alltt}
-	\$ ls vegasfs/users/ljsc/tweets.txt
+    \$ ls vegasfs/users/ljsc/tweets.txt
 \end{alltt} 
 
 which is then processed by a sinatra handler:
 	
 \begin{alltt}
-	get 'vegasfs/users/ljsc/tweets.txt' do
-	  #handler
-	end
+    get 'vegasfs/users/ljsc/tweets.txt' do
+      #handler
+    end
 \end{alltt}
 
 This handler method will perform the actual call to the twitter service and
 return the data as key:value pairs: 
 
 \begin{alltt}
-	Twitter::API.tweets\_for\_user(params[:user])
+    Twitter::API.tweets\_for\_user(params[:user])
 \end{alltt}
 
 All internal messaging will be done by passing JSON objects containing key:value
