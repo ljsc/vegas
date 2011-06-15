@@ -101,3 +101,29 @@ represent HTTP connections. An HTTP request using one of the specified verbs
 components. Likewise, lower level components will---based upon responses further
 down the stack---return HTTP responses to the layer above.
 
+\subsection{Detailed Description}
+\subsubsection{HTTP Verb to FUSE call mapping}
+The mapping will attempt to match up the HTTP verbs to FUSE function calls as defined by HTTP 1.1 and FUSE reference API. Referenced in Figure \ref{fig:httpverbs}, the HTTP verbs map naturally to the FUSE filesystem functions. Along with the verb, the fuse function will be passed the route as a parameter to perform the specified operation on the specified path.   
+\begin{figure}[H]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+HTTP VERB & FUSE FUNCTION CALL \\\hline
+
+GET & read()\\
+
+HEAD & statfs() \\
+
+POST  & write() or create() \\
+
+PUT & rename() \\
+
+DELETE & unlink() \\\hline
+
+
+\end{tabular}
+
+\caption{HTTP verbs to FUSE function calls}\label{fig:httpverbs}
+\end{figure}
+
+
