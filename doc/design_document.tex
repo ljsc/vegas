@@ -1,4 +1,4 @@
-\section{design document}
+\section{Design Specification}
 
 \subsection{Purpose}
 
@@ -26,19 +26,19 @@ will be fetched from the API.
 \begin{figure}[h]
 \centering
 \begin{tikzpicture}
-  \node [draw] at (0,0)    (Bottom) {Twitter API};
-  \node [draw] at (0,1.5)  (Middle) {Router};
   \node [draw] at (0,3)    (Top)    {Fuse Driver};
+  \node [draw] at (0,1.5)  (Middle) {Router};
+  \node [draw] at (0,0)    (Bottom) {Twitter API};
 
   \draw [<-] (Bottom.120) -- (Middle.240);
   \draw [<-] (Middle.290) -- (Bottom.70);
   \draw [<-] (Middle.120) -- (Top.240);
-  \draw [<-] (Top.290) -- (Middle.70);
+  \draw [<-] (Top.290)    -- (Middle.70);
 
   \node at (-1.5, 0.75) { Request };
   \node at (-1.5, 2.25) { Request };
-  \node at (1.5, 0.75) { Response };
-  \node at (1.5, 2.25) { Response };
+  \node at (1.5, 0.75)  { Response };
+  \node at (1.5, 2.25)  { Response };
 \end{tikzpicture}
 \caption{Top Level Components}\label{fig:top-top}
 \end{figure}
@@ -57,9 +57,10 @@ will be responsible for fetching/manipulating the twitter data via the
 webservice api provided by twitter.
 
 \paragraph{Twitter API} will be leveraged to actually interact with the data as
-requested by the user.
+requested by the user.  We will use an open source library for interacting with
+twitter to get the required data.
 
-\subsubsection{Connecting Elements}
+\subsubsection{Connecting Elements and Data Elements}
 
 The above processing elements are connected to form a layered architecture as
 shown in figure~\ref{fig:top-top} above. All connections in the diagram
