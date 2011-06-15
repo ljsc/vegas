@@ -21,6 +21,38 @@ FUSE (Fileystem in User SpacE) \footnote{https://rubyforge.org/projects/fusefs/}
 to actually mimic a POSIX filesystem on the user's local environment. All data
 will be fetched from the API.
 
+The FUSE driver maps a file system call to an HTTP verb. This HTTP request is
+sent to a local instance of a web service
+
+\begin{alltt}
+	\$ ls vegasfs/users/ljsc/tweets.txt
+\end{alltt} 
+
+which is then processed by a sinatra handler:
+	
+\begin{alltt}
+	get 'vegasfs/users/ljsc/tweets.txt' do
+	  #handler
+	end
+\end{alltt}
+
+This handler method will perform the actual call to the twitter service and
+return the data as key:value pairs: 
+
+\begin{alltt}
+	Twitter::API.tweets\_for\_user(params[:user])
+\end{alltt}
+
+All internal messaging will be done by passing JSON objects containing key:value
+pairs for twitter data and strings for URIs and verbs.
+
+When redirected to a URL, the system should attempt to fetch the URL and save
+locally. In the case of a common image file type (jpg,gif,png) the system should
+attempt to recognize it and save as the appropriate file type. In the event of
+another type of file, the system should create a reference link to be opened by
+a web browser. These operations should be done utilizing CURL and other command
+line tools as appropriate.  
+
 \subsection{Top Level Archetecture}
 
 \begin{figure}[h]
@@ -68,5 +100,4 @@ represent HTTP connections. An HTTP request using one of the specified verbs
 (GET/POST/PUT/DELETE) is sent to lower level components from higher level
 components. Likewise, lower level components will---based upon responses further
 down the stack---return HTTP responses to the layer above.
-
 
