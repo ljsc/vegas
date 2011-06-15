@@ -1,11 +1,25 @@
 \section{design document}
+
 \subsection{Purpose}
-The problem we are trying to solve is how to map a RESTful API onto a POSIX filespace. This allows users to browse the data in a familiar topography and also utilize various command-line tools for browsing, manipulating, creating, and deleting data. 
 
-Our program is meant to be used by an average user who has a basic understanding of file systems and command-line tools. Our goal is to abstract the process so that the user does not need to know the specific RESTful API, he or she simply needs to know simple file operations in order to interact with the program.
+The problem we are trying to solve is how to map a RESTful API onto a POSIX
+filespace. This allows users to browse the data in a familiar topography and
+also utilize various command-line tools for browsing, manipulating, creating,
+and deleting data. 
 
-\subsection{High Level Entities}
-Our design consists of a RESTful API that interfaces with our ruby program. For demonstration purposes we are basing our implementation off of the Twitter API(\textit{http://http://dev.twitter.com/doc})The Ruby middleware uses Sinatra for pairing methods with RESTful routes. We use the ruby implementation of the FUSE (Fileystem in User SpacE) (\textit{https://rubyforge.org/projects/fusefs/}) to actually mimic a POSIX filesystem on the user's local environment. All data will be fetched from the API. We may implement a caching algorithm if time allows, but the program should be designed to allow caching to be implemented.   
+Our program is meant to be used by an average user who has a basic understanding
+of file systems and command-line tools. Our goal is to abstract the process so
+that the user does not need to know the specific RESTful API, he or she simply
+needs to know simple file operations in order to interact with the program.
+
+\subsection{Overview}
+
+For demonstration purposes we are basing our implementation off of the Twitter
+API\footnote{http://http://dev.twitter.com/doc}. The Ruby middleware uses Sinatra
+for pairing methods with RESTful routes. We use the ruby implementation of the
+FUSE (Fileystem in User SpacE) \footnote{https://rubyforge.org/projects/fusefs/}
+to actually mimic a POSIX filesystem on the user's local environment. All data
+will be fetched from the API.
 
 \subsection{Top Level Archetecture}
 
@@ -13,10 +27,10 @@ Our design consists of a RESTful API that interfaces with our ruby program. For 
 
 \paragraph{The FUSE driver} handles file system requests generated due
 to user actions on particular file paths as described in the requirements
-document. It converts these requests into an http request which is forwared to
+document. It converts these requests into an HTTP request which is forwared to
 the Sinatra backend.
 
-\paragraph{The Router} implements a simple http web server which listens to requests from
+\paragraph{The Router} implements a simple HTTP web server which listens to requests from
 the FUSE driver. This will be implemented using the Sinatra framework, which
 will match against a requested uri and invoke a specific handler. These handlers
 will be responsible for fetching/manipulating the twitter data via the
@@ -28,7 +42,11 @@ requested by the user.
 \subsection{Connecting Elements}
 
 The above processing elements are connected to form a layered architecture as
-shown in figure~\ref{fig:top-top} below.
+shown in figure~\ref{fig:top-top} below. All connections in the diagram
+represent HTTP connections. An HTTP request using one of the specified verbs
+(GET/POST/PUT/DELETE) is sent to lower level components from higher level
+components. Likewise, lower level components will---based upon responses further
+down the stack---return HTTP responses to the layer above.
 
 \begin{figure}[h]
 \centering
