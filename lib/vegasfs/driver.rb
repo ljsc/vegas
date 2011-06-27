@@ -1,5 +1,6 @@
 require 'net/http'
 require 'uri'
+require 'json'
 
 class VegasFS::Driver
   def self.connect(*args, &blk)
@@ -12,12 +13,21 @@ class VegasFS::Driver
   end
 
   def read_file(path)
-    with_remote do |http|
+    response = with_remote do |http|
       http.get(path)
     end
+    response.body
   end
 
-  alias_method :contents, :read_file
+  def contents(path)
+    response = with_remote do |http|
+      http.get(path)
+    end
+    json = JSON.parse(response.body)
+    json[json.keys[0]]
+  rescue JSON::ParserError
+    []
+  end
 
   def write_to(path, str)
     with_remote do |http|
@@ -26,8 +36,15 @@ class VegasFS::Driver
   end
 
   def size(path)
-    with_remote do |http|
+    response = with_remote do |http|
       http.head(path)
+    end
+    response['Content-Length'].to_i
+  end
+
+  def delete(path)
+    with_remote do |http|
+      http.delete(path)
     end
   end
 
