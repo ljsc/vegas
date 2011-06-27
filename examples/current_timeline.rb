@@ -12,8 +12,7 @@
 #        $ mkdir tweets
 # 4. Mount the file system:
 #        $ ruby current_timeline tweets/ &
-# 5. Play around with it. You can use ls to get the one file name, cat obviously
-#    view the tweets. Also, try out
+# 5. Play around with it. You can use ls to get the one file name, view the tweets. Also, try out
 #        $ du -sh tweets to see the size part in action
 #    And on that note; I had to implement the size call, otherwise it would
 #    return a 0byte lenght file resposne. Annoying, but apparently that is
@@ -22,7 +21,7 @@
 # 6. When you are done, you can kill the ruby driver as per normal, but this
 #    won't unmount the fuse volume. You can do this with the regular OSX tools.
 #        $ umount tweets/
-
+require 'rubygems'
 require 'fusefs'
 require 'json'
 require 'net/http'
