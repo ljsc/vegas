@@ -12,6 +12,21 @@ class VegasFS::Driver
   end
 
   def read_file(path)
-    response = Net::HTTP.get(URI.parse("http://#@host:#@port#{path}"))
+    with_remote do |http|
+      http.get(path)
+    end
+  end
+
+  alias_method :contents, :read_file
+
+  def write_to(path, str)
+    with_remote do |http|
+      http.post(path, str)
+    end
+  end
+
+  protected
+  def with_remote(&blk)
+    Net::HTTP.start(@host, @port, &blk)
   end
 end
