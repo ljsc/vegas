@@ -25,6 +25,12 @@ class VegasFS::Driver
     end
   end
 
+  def size(path)
+    with_remote do |http|
+      http.head(path)
+    end
+  end
+
   protected
   def with_remote(&blk)
     Net::HTTP.start(@host, @port, &blk)

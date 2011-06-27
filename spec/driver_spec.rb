@@ -28,5 +28,12 @@ describe VegasFS::Driver do
         :body => "Homer likes!"
       ).should have_been_made
     end
+
+    it "should submit a HEAD request to get file sizes" do
+      stub_request(:head, 'localhost:777/bloated.xml')
+      @vegas.size('/bloated.xml')
+
+      a_request(:head, "http://localhost:777/bloated.xml").should have_been_made
+    end
   end
 end
