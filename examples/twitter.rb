@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
-require 'rubygems'
 require 'json'
 require 'net/http'
 require 'uri'
+require 'twitter'
 
 class VegasFS
   def get_user_info(username)
@@ -10,9 +10,6 @@ class VegasFS
     response = Net::HTTP.get(URI.parse(url))
     info = JSON.parse(response)
   end
-  def return_zero
-
-  end 
 end
 
 
