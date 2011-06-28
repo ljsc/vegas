@@ -4,6 +4,10 @@ class VegasFS::Router < Sinatra::Base
     set :raise_errors, true
   end
 
+  get '/' do
+    {'resources' => ['user']}.to_json
+  end
+
   get '/user/:user.txt' do
     user = Twitter.user(params[:user])
 

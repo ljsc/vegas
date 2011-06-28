@@ -74,5 +74,15 @@ describe VegasFS::Driver do
 
       a_request(:delete, "http://localhost:777/delete_me.png").should have_been_made
     end
+
+    it "should regard paths without extensions to be directories" do
+      @vegas.directory?("/foo/bar").should be_true
+      @vegas.file?("/foo/bar").should be_false
+    end
+
+    it "should regard paths with extenstions to be files" do
+      @vegas.file?("/foo/bar.txt").should be_true
+      @vegas.directory?("/foo/bar.txt").should be_false
+    end
   end
 end

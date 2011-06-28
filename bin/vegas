@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+
+require 'vegasfs'
+
+driver = VegasFS::Driver.new(:host => 'localhost', :port => 3456)
+
+FuseFS.set_root(driver)
+FuseFS.mount_under ARGV.shift
+FuseFS.run
+

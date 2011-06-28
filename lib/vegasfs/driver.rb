@@ -19,6 +19,14 @@ class VegasFS::Driver
     response.body
   end
 
+  def directory?(path)
+    path !~ /[.]txt\z/
+  end
+
+  def file?(path)
+    !directory?(path)
+  end
+
   def contents(path)
     response = with_remote do |http|
       http.get(path)

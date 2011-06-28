@@ -9,6 +9,11 @@ describe VegasFS::Router do
     VegasFS::Router.new
   end
 
+  it "should list top level services" do
+    get '/'
+    last_response.body.should include("user")
+  end
+
   describe "getting user information" do
     it "should return user information" do
       Twitter.stub(:user) {
