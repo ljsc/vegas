@@ -12,6 +12,18 @@ class VegasFS
     info = JSON.parse(response)
   end
 
+  def get_user_mentions(usernam)
+    configure_authentication
+    client = Twitter::Client.new
+    mentions = client.mentions
+    client.end_session
+    mentions.to_json
+  end
+
+  def get_tweet_by_id(id)
+    tweet = Twitter.status(id)
+    {:message => tweet.text, :author => tweet.user.screen_name, :date => tweet.created_at} 
+  end
   def configure_authentication
     consumer_secret = "18yElxR1Zf8ESVkl3k7XQZxyAPWngz5iM69nbhH7yE"
     consumer_key = "zQ727fZBHDIv36pKhr2Hg"
