@@ -7,6 +7,26 @@ RSpec::Matchers.define :contain_images do
 end
 
 describe VegasFS::Parsers::Image do
+  describe "determining image type" do
+    let(:parser) { VegasFS::Parsers::Image.new(tweet) }
+
+    describe "on a tweet with a png" do
+      let(:tweet) { "@arielniweihuang http://bit.ly/ihhtC0 the work in progress.
+        Really basic at moment http://yfrog.com/h77tnfp"}
+      it "should detect the correct type" do
+        parser.contains_jpeg?.should be_false
+        parser.contains_png?.should be_true
+      end
+    end
+
+    describe "on a tweet with a jpeg" do
+      let(:tweet) { "Take a book, leave a book. http://yfrog.com/h0fr6nxj" }
+      it "should detect the correct type" do
+        parser.contains_jpeg?.should be_true
+        parser.contains_png?.should be_false
+      end
+    end
+  end
 
   describe "parsing an tweet with an image" do
     let(:tweet) { "Take a book, leave a book. http://yfrog.com/h0fr6nxj" }

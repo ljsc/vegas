@@ -31,11 +31,24 @@ class VegasFS::Router < Sinatra::Base
 
   expose '/tweet'
 
-  get %r{/tweet/(\d+).jpg} do |c|
+  get %r{/tweet/(\d+).jpe?g} do |c|
     begin
       parser = VegasFS::Parsers::Image.new(Twitter.status(c).text)
-      if parser.contains_image?
+      if parser.contains_jpeg?
         [200, {'Content-Type' => 'image/jpeg'}, parser.image_data]
+      else
+        [404, 'No image contained in tweet']
+      end
+    rescue Twitter::NotFound
+      [404, 'Tweet not found!']
+    end
+  end
+
+  get %r{/tweet/(\d+).png} do |c|
+    begin
+      parser = VegasFS::Parsers::Image.new(Twitter.status(c).text)
+      if parser.contains_png?
+        [200, {'Content-Type' => 'image/png'}, parser.image_data]
       else
         [404, 'No image contained in tweet']
       end

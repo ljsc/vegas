@@ -87,7 +87,7 @@ describe VegasFS::Router do
 
       @tweet.stub(:text).and_return("tweet text with yfrog url: yfrog.com/fooJ")
       @parser.stub(:image_data).and_return("XBINARYDATAX")
-      @parser.stub(:contains_image?).and_return(true)
+      @parser.stub(:contains_jpeg?).and_return(true)
     end
 
     it "should ask twitter for the correct tweet" do
@@ -120,7 +120,7 @@ describe VegasFS::Router do
     end
 
     it "should return a 404 if the tweet does not have a picture" do
-      @parser.stub(:contains_image?).and_return(false)
+      @parser.stub(:contains_jpeg?).and_return(false)
       get '/tweet/12345.jpg'
       last_response.status.to_i.should == 404
     end

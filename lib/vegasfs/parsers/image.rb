@@ -18,6 +18,14 @@ module VegasFS::Parsers
       !@url.nil?
     end
 
+    def contains_jpeg?
+      contains_images? and @url =~ /j\z/i
+    end
+
+    def contains_png?
+      contains_images? and @url =~ /p\z/i
+    end
+
     def image_data
       response = nil
 
