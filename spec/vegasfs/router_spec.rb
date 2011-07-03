@@ -54,6 +54,29 @@ describe VegasFS::Router do
       last_response.body.should include("location: Washington, DC")
     end
   end
+  
+  describe "following a link from a picture" do
+    before do
+      @tweet, @parser = double("tweet"), double("parser")
+
+      Twitter.stub(:status).and_return(@tweet)
+      VegasFS::Parsers::Link.stub(:new).and_return(@parser)
+
+      @tweet.stub(:text).and_return("Factory Girl's new look http://bit.ly/mJtiSl")
+      @parser.stub(:link_html).and_return("Some html including <em>Factory Girl</em>")
+      @parser.stub(:contains_links?).and_return(true)
+    end
+
+    it "should ask twitter for the correct tweet" do
+      Twitter.should_receive(:status).with("54321").and_return(@tweet)
+      get '/tweet/54321.html'
+    end
+
+    it "should produce the body of the html from following the link" do
+      get '/tweet/54321.html'
+      last_response.body.should include("Factory Girl")
+    end
+  end
 
   describe "getting a picture from a tweet" do
     before do
