@@ -20,7 +20,7 @@ class VegasFS::Driver
   end
 
   def directory?(path)
-    path !~ /[.]txt\z/
+    path !~ /[.](?:txt|jpe?g|png)\z/
   end
 
   def file?(path)
