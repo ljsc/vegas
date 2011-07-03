@@ -67,6 +67,11 @@ class VegasFS::Router < Sinatra::Base
   end 
 
 
+  def get_tweet_by_id(id)
+    tweet = Twitter.status(id)
+    {:message => tweet.text, :author => tweet.user.screen_name, :date => tweet.created_at} 
+  end
+
 
 end
 
