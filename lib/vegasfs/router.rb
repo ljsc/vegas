@@ -43,5 +43,18 @@ class VegasFS::Router < Sinatra::Base
       [404, 'Tweet not found!']
     end
   end
+
+  get %r{/tweet/(\d+).html} do |c|
+    begin
+      parser = VegasFS::Parsers::Link.new(Twitter.status(c).text)
+      if parser.contains_links?
+        [200, {'Content-Type' => 'text/html'}, parser.link_html]
+      else
+        [404, 'No links found in tweet']
+      end
+    rescue Twitter::NotFound
+      [404, 'Tweet not found!']
+    end
+  end
 end
 

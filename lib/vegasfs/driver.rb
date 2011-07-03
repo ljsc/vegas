@@ -69,7 +69,7 @@ class VegasFS::Driver
   end
 
   def without_extension?(path)
-    path !~ /[.](?:txt|jpe?g|png)\z/
+    path !~ /[.](?:txt|jpe?g|png|html)\z/
   end
 
 end
