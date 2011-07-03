@@ -12,9 +12,8 @@ class VegasFS
     info = JSON.parse(response)
   end
 
-  def get_user_mentions(usernam)
-    configure_authentication
-    client = Twitter::Client.new
+  def get_user_mentions
+    client = configure_authentication
     mentions = client.mentions
     client.end_session
     mentions.to_json
@@ -33,8 +32,16 @@ class VegasFS
       config.consumer_secret = consumer_secret
       config.oauth_token = "157879876-iSPfgtHxw8QSAj6cJl0uYTbDTV1kfxsw8Tgi1QGK"
       config.oauth_token_secret = "XiI1kkuGgvqZNc4mGIGkPxjcr19p9PVxhT7m0M"
+      Twitter::Client.new
     end
   end
+
+  def get_latest_tweets(num_of_tweets)
+    client = configure_authentication
+    latest = client.home_timeline({:count => num_of_tweets})
+    info = latest.to_json
+  end 
+
 end
 
 
