@@ -7,3 +7,4 @@ end
 
 require 'vegasfs/driver'
 require 'vegasfs/router'
+require 'vegasfs/parsers/image'

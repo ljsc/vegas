@@ -5,7 +5,7 @@ class VegasFS::Router < Sinatra::Base
   end
 
   get '/' do
-    {'resources' => ['user']}.to_json
+    {'resources' => ['user', 'tweet']}.to_json
   end
 
   get '/user/:user.txt' do
@@ -17,6 +17,11 @@ class VegasFS::Router < Sinatra::Base
        statuses: #{user.statuses_count}
        location: #{user.location}
     }.gsub(/^       /, '')
+  end
+
+  get %r{/tweet/(\d+).jpg} do |c|
+    image = VegasFS::Parsers::Image.new(Twitter.status(c).text).image_data
+    [200, {'Content-Type' => 'image/jpeg'}, image]
   end
 end
 
