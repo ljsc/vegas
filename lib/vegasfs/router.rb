@@ -9,7 +9,7 @@ class VegasFS::Router < Sinatra::Base
   end
 
   get '/' do
-    {'resources' => ['user', 'tweet']}.to_json
+    {'resources' => ['user', 'tweet', 'search']}.to_json
   end
 
   expose '/user'
@@ -64,6 +64,41 @@ class VegasFS::Router < Sinatra::Base
         [200, {'Content-Type' => 'text/html'}, parser.link_html]
       else
         [404, 'No links found in tweet']
+      end
+    rescue Twitter::NotFound
+      [404, 'Tweet not found!']
+    end
+  end
+
+  expose '/search'
+
+  require 'net/http'
+  require 'json'
+  get '/search/:q' do
+    response = Net::HTTP.start('search.twitter.com') do |http|
+      http.get("/search.json?q=#{params[:q]}")
+    end
+    tweets = JSON.parse(response.body)['results']
+
+    images = tweets.map do |t|
+      tweet_id = t['id_str']
+      if VegasFS::Parsers::Image.new(Twitter.status(tweet_id).text).contains_jpeg?
+        tweet_id + '.jpg'
+      else
+        nil
+      end
+    end.compact
+
+    {params[:q] => images }.to_json
+  end
+
+  get %r{/search/[^/]+/(\d+)[.]jpg} do |c|
+    begin
+      parser = VegasFS::Parsers::Image.new(Twitter.status(c).text)
+      if parser.contains_jpeg?
+        [200, {'Content-Type' => 'image/jpeg'}, parser.image_data]
+      else
+        [404, 'No image contained in tweet']
       end
     rescue Twitter::NotFound
       [404, 'Tweet not found!']
