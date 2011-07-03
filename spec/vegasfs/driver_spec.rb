@@ -75,14 +75,34 @@ describe VegasFS::Driver do
       a_request(:delete, "http://localhost:777/delete_me.png").should have_been_made
     end
 
-    it "should regard paths without extensions to be directories" do
-      @vegas.directory?("/foo/bar").should be_true
-      @vegas.file?("/foo/bar").should be_false
-    end
+    describe "determining resources as files or directories" do
+      it "should regard paths without extensions to be directories" do
+        @vegas.stub(:exists?).and_return(true)
+        @vegas.should_receive(:exists?).once
 
-    it "should regard paths with extenstions to be files" do
-      @vegas.file?("/foo/bar.txt").should be_true
-      @vegas.directory?("/foo/bar.txt").should be_false
+        @vegas.directory?("/foo/bar").should be_true
+        @vegas.file?("/foo/bar").should be_false
+      end
+
+      it "should regard paths with extenstions to be files" do
+        @vegas.stub(:exists?).and_return(true)
+        @vegas.should_receive(:exists?).once
+
+        @vegas.file?("/foo/bar.txt").should be_true
+        @vegas.directory?("/foo/bar.txt").should be_false
+      end
+
+      it "should check for 200 to see if the resource exists" do
+        stub_request(:head, "localhost:777/foo/bar.txt").to_return(:status => 200)
+        @vegas.exists?("/foo/bar.txt").should be_true
+        a_request(:head, "http://localhost:777/foo/bar.txt").should have_been_made
+      end
+
+      it "should consider 404's non-existing resources" do
+        stub_request(:head, "localhost:777/foo/bar.txt").to_return(:status => 404)
+        @vegas.exists?("/foo/bar.txt").should be_false
+        a_request(:head, "http://localhost:777/foo/bar.txt").should have_been_made
+      end
     end
   end
 end

@@ -9,10 +9,25 @@ describe VegasFS::Router do
     VegasFS::Router.new
   end
 
-  it "should list top level services" do
-    get '/'
-    last_response.body.should include("user")
-    last_response.body.should include("tweet")
+  describe "top level services" do
+    def self.it_should_expose_toplevel_services(*services)
+      it "should list them from top level" do
+        get '/'
+
+        services.each do |service|
+          last_response.body.should include(service)
+        end
+      end
+
+      services.each do |service|
+        it "should expose #{service}" do
+          get('/' + service)
+          last_response.status.to_i.should == 200
+        end
+      end
+    end
+
+    it_should_expose_toplevel_services('user', 'tweet')
   end
 
   describe "getting user information" do
@@ -49,6 +64,7 @@ describe VegasFS::Router do
 
       @tweet.stub(:text).and_return("tweet text with yfrog url: yfrog.com/fooJ")
       @parser.stub(:image_data).and_return("XBINARYDATAX")
+      @parser.stub(:contains_image?).and_return(true)
     end
 
     it "should ask twitter for the correct tweet" do
@@ -70,6 +86,20 @@ describe VegasFS::Router do
     it "should set the content type correctly" do
       get '/tweet/12345.jpg'
       last_response['Content-Type'].should == 'image/jpeg'
+    end
+
+    it "should return a 404 if the tweet does not exist" do
+      Twitter.stub!(:status) do
+        raise Twitter::NotFound.new("Not found", :status => 404)
+      end
+      get '/tweet/12345.jpg'
+      last_response.status.to_i.should == 404
+    end
+
+    it "should return a 404 if the tweet does not have a picture" do
+      @parser.stub(:contains_image?).and_return(false)
+      get '/tweet/12345.jpg'
+      last_response.status.to_i.should == 404
     end
   end
 end

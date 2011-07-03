@@ -20,11 +20,18 @@ class VegasFS::Driver
   end
 
   def directory?(path)
-    path !~ /[.](?:txt|jpe?g|png)\z/
+    without_extension?(path) && exists?(path)
   end
 
   def file?(path)
-    !directory?(path)
+    !without_extension?(path) && exists?(path)
+  end
+
+  def exists?(path)
+    response = with_remote do |http|
+      http.head(path)
+    end
+    response.code !~ /\A4/
   end
 
   def contents(path)
@@ -60,4 +67,9 @@ class VegasFS::Driver
   def with_remote(&blk)
     Net::HTTP.start(@host, @port, &blk)
   end
+
+  def without_extension?(path)
+    path !~ /[.](?:txt|jpe?g|png)\z/
+  end
+
 end
