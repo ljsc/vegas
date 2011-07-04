@@ -1,10 +1,19 @@
 #!/usr/bin/env ruby
 
+# @author Lou Scoras <ljsc@gwu.edu>
+
 require 'vegasfs'
 require 'fileutils'
 
 include FileUtils
 
+##
+# Helper method to create a daemon. Correctly detaches the process and then
+# yields to the passed in block
+#
+# @param [String] logpath The absolute path to the log file for the driver
+# portion of the project.
+#
 def daemonize(logpath)
   exit if fork
   Process.setsid
@@ -19,6 +28,12 @@ def daemonize(logpath)
   yield
 end
 
+##
+# Helper method to kill a process. With two parameters it will use the first as
+# the signal to send the process (defaults to -TERM). The other parameter should
+# be the absolute path to the daemon's pid file. Also, removes the pid file
+# after succesfully killing the process.
+#
 def kill(*args)
   sig = args.length == 2 ? args.shift : 'TERM'
   pid_file = args.shift
@@ -27,16 +42,29 @@ def kill(*args)
   system("kill -#{sig} #{pid} && rm #{pid_file}")
 end
 
+#
+# The vegas script should be passed two parameters. First, should be the command
+# to execute, either "mount" or "unmount". Second, is the mount point for vegas.
+#
 command = ARGV.shift
 mpoint  = File.expand_path(ARGV.shift)
 
+# Vegas stores all of it's data files in the user's home directory under
+# +~/.vegasfs+. This includes the pid files for both the driver and the router,
+# as well as the application log.
+#
 vegas_dir = File.join(ENV['HOME'], '.vegasfs')
 router_pid = File.join(vegas_dir, 'router.pid')
 driver_pid = File.join(vegas_dir, 'driver.pid')
 log_file = File.join(vegas_dir, 'vegasfs.log')
 
-
+# The most important command is that to mount the virtual file system. It will
+# first invoke the http server (router) and then mount via fuse.
+#
 if command == "mount"
+  
+  # Ensure the user's vegas directory exists first
+  #
   mkdir_p(vegas_dir)
 
   system("bundle exec rackup -Ilib -p7777 -P #{router_pid} -D")
@@ -50,7 +78,13 @@ if command == "mount"
     FuseFS.mount_under mpoint
     FuseFS.run
   end
+
 else
+
+  # Otherwise, assume we want to unmount. Kill both daemons and clean up the pid
+  # files. Finally, unmount the file system as well. (This probably only works on
+  # Mac OS
+  #
   kill 'KILL', router_pid
   kill driver_pid
 
