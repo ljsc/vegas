@@ -14,6 +14,15 @@ class VegasFS::Router < Sinatra::Base
 
   expose '/user'
 
+  get '/user/mentions.txt' do 
+    mentions = get_user_mentions
+   # mentions.each do |mention|
+   #  %Q{screen_name: #{mention.screen_name}
+   #     body: #{mention.text}
+   #   }.gsub(/^       /, '')
+  end
+
+
   get '/user/:user.txt' do
     begin
       user = Twitter.user(params[:user])
@@ -28,6 +37,7 @@ class VegasFS::Router < Sinatra::Base
       [404, 'User not found!']
     end
   end
+
 
   expose '/tweet'
 
@@ -57,8 +67,14 @@ class VegasFS::Router < Sinatra::Base
     end
   end
 
-  get '/tweets/latest.txt' do 
-      get_latest_tweets(20)
+
+  get %r{/tweet/(\d+).txt} do |tweet_id|
+    result = get_tweet_by_id(tweet_id)
+    'Text: ' + result[:message] + '\n Author:' + result[:author] + '\n Date Created: ' + result[:date]
+  end 
+
+  get '/tweet/latest.txt' do 
+      [200, {'Content-Type' => 'text/html'} , get_latest_tweets(20)]
   end 
 
 
@@ -96,14 +112,10 @@ class VegasFS::Router < Sinatra::Base
   def get_latest_tweets(num_of_tweets)
     client = configure_authentication
     latest = client.home_timeline({:count => num_of_tweets})
+    client.end_session
     info = latest.to_json
   end 
 
-
-  def get_tweet_by_id(id)
-    tweet = Twitter.status(id)
-    {:message => tweet.text, :author => tweet.user.screen_name, :date => tweet.created_at} 
-  end
 
 
 end
