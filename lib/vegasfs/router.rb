@@ -57,13 +57,10 @@ class VegasFS::Router < Sinatra::Base
   expose '/user'
 
   get '/user/mentions.txt' do 
-    mentions = get_user_mentions
-   # mentions.each do |mention|
-   #  %Q{screen_name: #{mention.screen_name}
-   #     body: #{mention.text}
-   #   }.gsub(/^       /, '')
+    mentions = JSON.parse(get_user_mentions)
+    output_file = mentions.map {|t| 'Screen Name:' + t['user']['screen_name'] + "\n" + 'Body:' + t['text'] + "\n" + 'Date:' + t['created_at'] + "\n\n"}.to_s
+    [200,{'Content-Type' => 'text/html'},output_file]
   end
-
 
   get '/user/:user.txt' do
     begin
