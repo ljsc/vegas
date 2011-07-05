@@ -126,7 +126,10 @@ class VegasFS::Router < Sinatra::Base
   end 
 
   get '/tweet/latest.txt' do 
-      [200, {'Content-Type' => 'text/html'} , get_latest_tweets(20)]
+    latest = JSON.parse(get_latest_tweets(20))
+    output_file = latest.map {|t| 'Screen Name:' + t['user']['screen_name'] + "\n" + 'Body:' + t['text'] + "\n" +     'Date:' + t['created_at'] + "\n\n"}.to_s
+   [200,{'Content-Type' => 'text/html'},output_file]
+
   end 
 
 end
