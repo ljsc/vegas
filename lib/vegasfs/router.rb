@@ -36,7 +36,10 @@ module VegasFS::TwitterHelpers
     client.end_session
     info = latest.to_json
   end 
-
+  
+  def get_hashtag(tag)
+    Twitter::Search.new.hashtag(tag).fetch.to_json
+  end
 end
 
 class VegasFS::Router < Sinatra::Base
@@ -132,5 +135,18 @@ class VegasFS::Router < Sinatra::Base
 
   end 
 
+  post '/tweet/new.txt' do
+    client = configure_authentication
+    client.update(request.body)
+  end
+
+  expose '/hashtag'
+  get '/hashtag/:tag.txt' do 
+    htag = params[:tag]
+    tweets = JSON.parse(get_hashtag(htag))
+    
+    output_file = tweets.empty? ?  "No hashtag Found for tag #{htag}" : tweets.map {|t| 'Screen Name:' + t['from_user'] + "\n" + 'Body:' + t['text'] + "\n" + 'Date:' + t['created_at'] + "\n\n"}.to_s  
+    [200,{'Content-Type' => 'text'},output_file]
+  end
 end
 
