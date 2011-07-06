@@ -59,7 +59,7 @@ class VegasFS::Router < Sinatra::Base
   get '/user/mentions.txt' do 
     mentions = JSON.parse(get_user_mentions)
     output_file = mentions.map {|t| 'Screen Name:' + t['user']['screen_name'] + "\n" + 'Body:' + t['text'] + "\n" + 'Date:' + t['created_at'] + "\n\n"}.to_s
-    [200,{'Content-Type' => 'text/html'},output_file]
+    [200,{'Content-Type' => 'text'},output_file]
   end
 
   get '/user/:user.txt' do
@@ -110,7 +110,7 @@ class VegasFS::Router < Sinatra::Base
     begin
       parser = VegasFS::Parsers::Link.new(Twitter.status(c).text)
       if parser.contains_links?
-        [200, {'Content-Type' => 'text/html'}, parser.link_html]
+        [200, {'Content-Type' => 'text'}, parser.link_html]
       else
         [404, 'No links found in tweet']
       end
@@ -128,7 +128,7 @@ class VegasFS::Router < Sinatra::Base
   get '/tweet/latest.txt' do 
     latest = JSON.parse(get_latest_tweets(20))
     output_file = latest.map {|t| 'Screen Name:' + t['user']['screen_name'] + "\n" + 'Body:' + t['text'] + "\n" +     'Date:' + t['created_at'] + "\n\n"}.to_s
-   [200,{'Content-Type' => 'text/html'},output_file]
+   [200,{'Content-Type' => 'text'},output_file]
 
   end 
 
