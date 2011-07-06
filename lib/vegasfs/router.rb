@@ -1,10 +1,11 @@
 # Helper Module to store twitter accessing methods
-# @author: Catalino Cuadrado
+# @author Catalino Cuadrado
 
 module VegasFS::TwitterHelpers
   ##
   # gets user info for a specific username and returns it as JSON.
-  # @param [String] username The short twitter username (ex @AgentJose1) of the person you want to get
+  # @param [String] username The short twitter username (ex @AgentJose1) of the
+  # person you want to get
   #  
   def get_user_info(username)
     url = 'http://api.twitter.com/1/users/show.json?screen_name='+ username
@@ -14,6 +15,7 @@ module VegasFS::TwitterHelpers
 
   ## 
   # gets the user's @mentions and returns them as JSON.
+  #
   def get_user_mentions
     client = configure_authentication
     mentions = client.mentions
@@ -24,13 +26,18 @@ module VegasFS::TwitterHelpers
   ## 
   # gets a tweet by tweet ID
   # @params id [long] Long integer number that represents the specific tweet
+  #
   def get_tweet_by_id(id)
     tweet = Twitter.status(id)
     {:message => tweet.text, :author => tweet.user.screen_name, :date => tweet.created_at} 
   end
+
   ## 
-  # configures authentication with the Twitter server and returns a client object to be used for operations
-  # Key creation neesd to be done manually and then pasted into the software because callbacks are not supported. 
+  # configures authentication with the Twitter server and returns a client
+  # object to be used for operations
+  # Key creation neesd to be done manually and then pasted into the software
+  # because callbacks are not supported. 
+  #
   def configure_authentication
     consumer_secret = "18yElxR1Zf8ESVkl3k7XQZxyAPWngz5iM69nbhH7yE"
     consumer_key = "zQ727fZBHDIv36pKhr2Hg"
@@ -43,16 +50,18 @@ module VegasFS::TwitterHelpers
       Twitter::Client.new
     end
   end
+
   ##
   # gets latest tweets in a user's timeline
   # @params num_of_tweets [Integer] Number of Tweets you want to return in the timeline. 
-
+  #
   def get_latest_tweets(num_of_tweets)
     client = configure_authentication
     latest = client.home_timeline({:count => num_of_tweets})
     client.end_session
     info = latest.to_json
   end 
+
   ##
   # Returns all tweets with a hashtag tag
   # @params tag [String] Hashtag you want to return.
@@ -62,35 +71,49 @@ module VegasFS::TwitterHelpers
 end
 
 ##
-# Router Class that handles routes and http verbs from the fusefs driver to the twitter webservice 
+# Router Class that handles routes and http verbs from the fusefs driver to the
+# twitter webservice 
+#
 class VegasFS::Router < Sinatra::Base
- include VegasFS::TwitterHelpers
+  include VegasFS::TwitterHelpers
+  
+  # Don't display exceptions page during unit tests. It should raise the actual
+  # application error
+  #
   configure :test do
     set :show_exceptions, false
     set :raise_errors, true
   end
 
+  ##
+  # Utility method for exposing top level urls.
+  #
   def self.expose(url)
     get(url) { url }
   end
-# Sets up the default routes
+  
+  # List top level service enpoints
+  #
   get '/' do
-    {'resources' => ['user', 'tweet']}.to_json
+    {'resources' => ['user', 'tweet', 'hashtag']}.to_json
   end
 
   expose '/user'
-  ## 
-  # @author:catalino
+  
+  # @authorcatalino
   # Returns the user mentions as text 
+  #
   get '/user/mentions.txt' do 
     mentions = JSON.parse(get_user_mentions)
     output_file = mentions.map {|t| 'Screen Name:' + t['user']['screen_name'] + "\n" + 'Body:' + t['text'] + "\n" + 'Date:' + t['created_at'] + "\n\n"}.to_s
     [200,{'Content-Type' => 'text'},output_file]
   end
-  ## 
-  # @author: ljsc
-  # Returns user information 
-  # @params user [String] the short name without the @ (ex. /user/agentjose1.txt) 
+  
+  # Returns information about a user in a text format.
+  # @author Lou Scoras <ljsc@gwu.edu>
+  # @params [String] :user the short name without the @ (ex. /user/agentjose1.txt) 
+  # @return A text representation of the user meta data
+  #
   get '/user/:user.txt' do
     begin
       user = Twitter.user(params[:user])
@@ -108,10 +131,12 @@ class VegasFS::Router < Sinatra::Base
 
 
   expose '/tweet'
-  ##
-  # @author: ljsc
-  # gets a tweet's image from a certain tweet ID  
-  # @params c [Integer] ID is passed from the regex. 
+  
+  # Extract a JPEG image embedded from a specified tweet 
+  # @author Lou Scoras <ljsc@gwu.edu>
+  # @params [Integer] c the primary id of the desired tweet 
+  # @return the binary image data
+  #
   get %r{/tweet/(\d+).jpe?g} do |c|
     begin
       parser = VegasFS::Parsers::Image.new(Twitter.status(c).text)
@@ -124,10 +149,12 @@ class VegasFS::Router < Sinatra::Base
       [404, 'Tweet not found!']
     end
   end
-  ##
-  # @author: ljsc
-  # Gets a png image
-  # @params c [Integer] taken from the regex
+  
+  # Extract a PNG image embedded from a specified tweet 
+  # @author Lou Scoras <ljsc@gwu.edu>
+  # @params [Integer] c the primary id of the desired tweet 
+  # @return the binary image data
+  #
   get %r{/tweet/(\d+).png} do |c|
     begin
       parser = VegasFS::Parsers::Image.new(Twitter.status(c).text)
@@ -140,10 +167,12 @@ class VegasFS::Router < Sinatra::Base
       [404, 'Tweet not found!']
     end
   end
-  ## 
-  #@author:ljsc
-  #Fetches an HTML page
-  #@params c [Integer] taken from the regex
+  
+  # Fetches an HTML page embedded as a link within a tweet body
+  # @author Lou Scoras <ljsc@gwu.edu>
+  # @params [Integer] c the primary id of the desired tweet 
+  # @return the html content of the followed link
+  #
   get %r{/tweet/(\d+).html} do |c|
     begin
       parser = VegasFS::Parsers::Link.new(Twitter.status(c).text)
@@ -157,36 +186,38 @@ class VegasFS::Router < Sinatra::Base
     end
   end
 
-  ##
-  #@author:catalino
+  # @author catalino
   # gets the tweet by ID and returns the result as text
-  #@params tweet_id [Integer] taken from the regex
+  # @params [Integer] tweet_id taken from the regex
+  #
   get %r{/tweet/(\d+).txt} do |tweet_id|
     result = get_tweet_by_id(tweet_id)
     'Text: ' + result[:message] + '\n Author:' + result[:author] + '\n Date Created: ' + result[:date]
   end 
-  ##
-  # @author: catalino
+  
+  # @author catalino
   # fetches the latest 20 tweets 
+  #
   get '/tweet/latest.txt' do 
     latest = JSON.parse(get_latest_tweets(20))
     output_file = latest.map {|t| 'Screen Name:' + t['user']['screen_name'] + "\n" + 'Body:' + t['text'] + "\n" +     'Date:' + t['created_at'] + "\n\n"}.to_s
    [200,{'Content-Type' => 'text'},output_file]
   end 
 
-  ## 
-  # @author: catalino
+  # @author catalino
   # Creates a new tweet based off of params passed by the Sinatra handler
+  #
   post '/tweet/new.txt' do
     client = configure_authentication
     client.update(request.body)
   end
   
-  ##
-  # @author: catalino
-  # Gets tweets containing specified hashtag with default search parameters. 
-  # @params :tag [String] is taken from the route
   expose '/hashtag'
+  
+  # @author catalino
+  # Gets tweets containing specified hashtag with default search parameters. 
+  # @params [String] :tag is taken from the route
+  #
   get '/hashtag/:tag.txt' do 
     htag = params[:tag]
     tweets = JSON.parse(get_hashtag(htag))
