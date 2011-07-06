@@ -9,17 +9,21 @@ a POSIX environment.
 * [Lou Scoras](http://github.com/ljsc)
 * [Catalino Cuadrado](http://github.com/ccuadrado)
 
-## Dependancies
+## Dependencies
 
 Vegas requires both Ruby and Fuse to run. It has been tested on Mac OS X with MacFUSE.
 
-You can install ruby by downloading the source code for [ruby 1.8.7](http://ftp.ruby-lang.org/pub/ruby/1.8/ruby-1.8.7-p352.tar.gz).
+You can install ruby by downloading the source code for [ruby
+1.8.7](http://ftp.ruby-lang.org/pub/ruby/1.8/ruby-1.8.7-p352.tar.gz). Ruby's
+packaging system, RubyGems, should be installed as well. It can be obtained
+[here](http://production.cf.rubygems.org/rubygems/rubygems-1.8.5.tgz).
 
 MacFUSE can be downloaded [here](http://code.google.com/p/macfuse/downloads/detail?name=MacFUSE-2.0.3%2C2.dmg&can=2&q=).
 
 ## Installation
 
-There is no install procedure for Vegas at this time, but you can run it directly out of the source directory.
+There is no install procedure for Vegas at this time, but you can run it
+directly out of the source directory.
 
 First, ensure that you have bundler installed:
 
@@ -31,13 +35,14 @@ All other ruby depenencies can then be installed with the bundle command.
 
 ## Running
 
-In depth instructions are available in the project document, but in short, you first create the directory you want to mount vegas to
+In depth instructions are available in the project document, but in short, you
+first create the directory you want to mount vegas to
 
     $ mkdir t
 
 then mount it with the vegas script:
 
-    $ ruby -Ilib bin/vegas mount t
+    $ ruby -rubygems -Ilib bin/vegas mount t
 
 You can then access the system through the normal command line tools:
 
