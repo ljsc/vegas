@@ -14,6 +14,8 @@ namespace :doc do
   task :generate do
     puts "Generating the project report..."
     system('pdflatex', "-output-directory=#{Vegas.root('doc')}", Vegas.root('doc', 'project.tex'))
+    Dir.chdir('doc') { system('bibtex project') }
+    system('pdflatex', "-output-directory=#{Vegas.root('doc')}", Vegas.root('doc', 'project.tex'))
   end
 
   desc 'Remove generated tex intermediate files'

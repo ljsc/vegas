@@ -1,0 +1,46 @@
+\section{Tests}
+
+Tests for the VegasFS projects are provided as executable specifications written in
+RSpec, a behavior-driven development tool for Ruby. These specs were used in
+the development of the project. They can be used to verify the correct
+implementation of the Vegas driver and several of the features exposed via the
+Sinatra layer.
+
+To run the specs, simply execute the default Rake\footnote{Ruby's equivalent to
+make} task at the command line. You can do this by typing \texttt{rake} from the
+command line at the project root. The source code for these specifications can
+be found in the \texttt{spec} directory.
+
+As an example of what the specs look like, we have included an excerpt the
+specification for the driver below. Also, recall that in
+section~\ref{sec:requirements} we have also included how to manually test the
+system from the command line.
+
+\begin{verbatim}
+describe VegasFS::Driver do
+  describe "connected to localhost port 777" do
+    before do
+      @vegas = VegasFS::Driver.connect(:host => 'localhost', :port => 777)
+    end
+
+    describe "accessing a file" do
+      it "should submit a GET request on read_file calls" do
+        stub_request(:get, 'localhost:777/foo/bar')
+        @vegas.read_file("/foo/bar")
+
+        a_request(:get, "http://localhost:777/foo/bar").should have_been_made
+      end
+
+      it "should return the body contents of a GET request" do
+        stub_request(:get, 'localhost:777/foo/bar').to_return(:body => "Baz!")
+        @vegas.read_file("/foo/bar").should == "Baz!"
+      end
+    end
+  end
+end
+\end{verbatim}
+
+In the example we first set up an instance of the Vegas router. Then we specify
+that whenever fuse calls Vegas to read a file, that a GET request should be sent
+out to the corresponding URI path on the Sinatra handler.
+

@@ -6,6 +6,7 @@
 \usepackage{amsmath,amssymb}
 \usepackage{alltt}
 \usetikzlibrary{decorations.pathreplacing,shapes.multipart,matrix}
+\bibliographystyle{alpha}
 \begin{document}
 
 \renewcommand{\bfdefault}{sbc}
@@ -22,13 +23,13 @@ Professor Bellaachia}
 
 \begin{abstract}
 
-Over the last several years, Roy Fielding's "Representational State Transfer"
-(REST) architecture has had a profound impact on the design of the web; many of
-the most heavily frequented webservice APIs have been implemented using the
-ideas proposed by Fielding in his dissertation. Although his paper specifically
-discusses REST as an implementation pattern for the web---in particular the
-paper explores the intricacies of the HTTP protocol---we believe that REST can
-be partially applied in other areas as well.
+Over the last several years, Roy Fielding's Representational State Transfer
+(REST) architecture \nocite{Fie00} has had a profound impact on the design of
+the web; many of the most heavily frequented webservice APIs have been
+implemented using the ideas proposed by Fielding in his dissertation. Although
+his paper specifically discusses REST as an implementation pattern for the
+web---in particular the paper explores the intricacies of the HTTP protocol---we
+believe that REST can be partially applied in other areas as well.
 
 For our project, we will be implementing a virtual file system. We will use its
 construction as a vehicle for exploring the efficacy of REST principles in
@@ -64,6 +65,10 @@ negotiation and caching as well.
 \include{overview}
 \include{requirements}
 \include{design_document}
+\include{tests}
+
+\addcontentsline{toc}{section}{References}
+\bibliography{project}
 
 \end{document}
 
