@@ -1,0 +1,118 @@
+\section{User Manual}\label{sec:usermanual}
+
+\subsection{Getting Started}
+In order to use the program, please make sure you have followed all the instructions in README file located at \texttt{http://github.com/ljsc/vegas}. This will ensure that the system is installed properly.
+
+To mount the file system, just type the following into a terminal from the \texttt{vegas} directory:
+\begin{alltt}
+    \$ ruby -Ilib bin/vegas mount <mountpoint directory>
+\end{alltt}
+\bf{Example:} to mount to the directory \texttt{tweets} the you would write:
+\begin{alltt}
+    \$ ruby -Ilib bin/vegas mount tweets/
+\end{alltt}
+Unmounting the filesystem is similarly done with 
+\begin{alltt}
+    \$ ruby -Ilib bin/vegas umount tweets/
+\end{alltt}
+This must be done each time changes are made to the source code or testing in irb. 
+
+\subsection{Unauthenticated Operations}
+Twitter has a few operations that do not require you to be logged in as a user. These methods generally aren't data-intensive. 
+\subsubsection{Getting User Info}\label{userinfo}
+Getting user info in the application simply involves reading the file that contains the user's twitter name, without the @ symbol.\\
+\begin{alltt}
+    \$ cat tweets/user/<username>.txt
+\end{alltt}
+\bf{Example:}
+Typing: 
+\begin{alltt}
+    \$ cat tweets/user/agentjose1.txt
+\end{alltt}
+provides the following output:
+\begin{alltt}
+   name: Catalino
+   screen_name: AgentJose1
+   followers: 8
+   statuses: 150
+   location: 
+\end{alltt}
+\subsubsection{Getting A Tweet by ID}
+A tweet usually has a unique identifier associated with it. The program allows you to call up a specific tweet by ID with the following syntax:
+\begin{alltt}
+    \$ cat tweets/tweet/<GUID>.txt
+\end{alltt}
+\bf{Example:} Typing:
+\begin{alltt}
+    \$ cat tweets/tweet/89409003758690304.txt
+\end{alltt}
+
+provides the following output:
+\begin{alltt}
+    Text: RT @DG_rad: Boulder is ... how you say ... Awesome.
+    Author:crysb
+    Date Created: Fri Jul 08 19:02:22 +0000 2011
+\end{alltt}
+
+\subsubsection{Getting a twitter image}
+Built into our program is the ability to perform content negotiation via HTTP. If our program detects you would like to get an image, it will automatically download and display the image to the appropriate program. For example, typing
+\begin{alltt}
+    \$ cat tweets/tweet/<tweet-with-yfrogurl>.txt
+\end{alltt}
+will yield the text of the tweet. However, if you change the syntax to 
+\begin{alltt}
+    \$ open tweets/tweet/<tweet-with-yfrogurl>.<jpg|png|gif>
+\end{alltt}
+The system will display the image requested after filtering out the HTML and redirects. 
+\subsubsection{Listing Command Top Level Types}
+To list available top-level objects you can access with the system, type: 
+\begin{alltt}
+    \$ ls tweets/
+\end{alltt}
+This will produce a list of top-level objects you can access:
+\begin{alltt}
+    hashtag tweet user
+\end{alltt}
+
+
+
+\subsection{Authenticated Operations}\label{authenticatedoperations}
+Twitter has several authenticated methods that produce much more data, in addition to providing personalized access to tweets that may be marked as private. 
+Configuration in the app is achieved by editing the \texttt{configure\_authentication} method in the \texttt{VegasFS::TwitterHelpers} module in the \texttt{lib/vegasfs/router.rb} file with the correct OAuth credentials. The application will then automatically authenticate before performing any task that requires authentication.
+\subsubsection{Getting Latest Tweets}\label{latesttweets}
+Syntax for getting the latest 20 tweets for a user's timeline:
+\begin{alltt}
+    \$ cat tweets/tweet/latest.txt
+\end{alltt}
+\bf{example:} Typing the command yields the following response:
+\begin{alltt}
+    Screen Name:badbanana
+    Body:My new social network is an empty pickle jar that[...]
+    Screen Name:crysb
+    Body:Getting everyone into position for the World Record[...]
+    Screen Name:ConanOBrien
+    Body:In NY. I saw "Book of Mormon," then ran into [...]
+    Date:Sat Jul 09 19:37:43 +0000 2011
+
+    Screen Name:crysb
+    Body:Brazilian batala players! Been seeing them everywhere lately.
+    Date:Sat Jul 09 19:17:19 +0000 2011
+
+    <continues on for 16 more tweets...>
+\end{alltt}
+
+\subsubsection{Getting Tweets By Hashtag}\label{tweetsbyhashtags}
+
+Hashtags are unique identifiers in Twitter indicating the tweet relates to a specifc topic. Usually these are demarcated with a '\#' symbol, such as \texttt{\#FollowFriday} or \texttt{\#ispendtoomuchtimeontwitter}. \\
+In order to get tweets with hashtags, use the following syntax:
+\begin{alltt}
+    \$ cat hashtag/<tag>.txt
+\end{alltt}
+where \texttt{<tag>} is the hashtag with the pound sign removed. 
+
+\subsection{Unsupported Impementations}
+\subsubsection{new tweets}
+This feature has been coded but as of project due date we were unable to figure out the correct implementation with the FUSE drivers: Writing to a file \texttt{tweets/tweet/new.txt} was supposed to post that information to Twitter, but for some reason a permissions error is preventing us from being able to write to the FUSE filesystem.
+\subsubsection{Tweet Ranges}
+This feature has been coded into the \texttt{VegasFS::TwitterHelpers} module but a parser was never implemented in the routes due to time constraints.
+
